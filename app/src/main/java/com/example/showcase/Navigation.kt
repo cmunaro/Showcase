@@ -5,8 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.showcase.features.mainlist.MainListPage
-import com.example.showcase.features.mainlist.MainListRoute
+import com.example.showcase.features.mainlist.ui.MainListPage
+import com.example.showcase.features.mainlist.ui.MainListRoute
 
 @Composable
 fun Navigation(modifier: Modifier) {

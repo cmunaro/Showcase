@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     kotlin("plugin.serialization") version "2.1.20"
+    id("com.google.devtools.ksp") version "2.1.20-2.0.0"
+    id("de.jensklingenberg.ktorfit") version "2.5.1"
 }
 
 android {
@@ -11,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.showcase"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -56,6 +58,13 @@ dependencies {
     implementation(project.dependencies.platform("io.insert-koin:koin-bom:4.0.2"))
     implementation(libs.koin.compose.viewmodel.navigation)
     implementation(libs.koin.core)
+
+    // Ktor
+    implementation(libs.ktorfit.lib)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
 
     implementation(libs.kotlinx.serialization.json)
 
