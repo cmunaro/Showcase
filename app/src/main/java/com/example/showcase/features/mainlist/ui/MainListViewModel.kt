@@ -19,7 +19,7 @@ class MainListViewModel(
     EventLauncher<MainListEvent> by EventLauncherImpl()
 {
 
-    fun fetchItems() {
+    private fun fetchItems(fromStart: Boolean = false) {
         updateState { copy(items = Async.Loading(items.getOrNull())) }
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -28,7 +28,7 @@ class MainListViewModel(
                 .getOrDefault(emptyList())
                 .map(Media::toPreview)
             updateState {
-                val newItemsList = items.getOrElse(emptyList()) + medias
+                val newItemsList = if(fromStart) medias else items.getOrElse(emptyList()) + medias
                 copy(items = Async.Success(newItemsList))
             }
         }
@@ -39,4 +39,6 @@ class MainListViewModel(
             fetchItems()
         }
     }
+
+    fun onRefresh() = fetchItems(fromStart = true)
 }

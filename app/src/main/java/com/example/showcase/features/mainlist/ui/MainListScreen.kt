@@ -1,17 +1,16 @@
 package com.example.showcase.features.mainlist.ui
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,7 +33,7 @@ fun MainListPage(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.fetchItems()
+        viewModel.onRefresh()
 
         viewModel.eventsChannel.collectLatest {
             val snackBarResult = snackBarHostState.showSnackbar(
@@ -46,30 +45,28 @@ fun MainListPage(
         }
     }
 
-    MainListScreen(state)
+    MainListScreen(state = state, onRefresh = viewModel::onRefresh)
 }
 
 @Composable
-fun MainListScreen(state: MainListState) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(items = state.items.getOrElse(emptyList()), key = MediaPreview::id) { mediaPreview ->
-            MediaListItem(mediaPreview)
-        }
-
-        if (state.items is Async.Success && state.items.value.isEmpty()) {
-            item {
-                Text(
-                    text = "No items",
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
+@OptIn(ExperimentalMaterial3Api::class)
+fun MainListScreen(state: MainListState, onRefresh: () -> Unit) {
+    PullToRefreshBox(
+        isRefreshing = state.items is Async.Loading || state.items == Async.Uninitialized,
+        onRefresh = onRefresh,
+    ) {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            items(items = state.items.getOrElse(emptyList()), key = MediaPreview::id) { mediaPreview ->
+                MediaListItem(mediaPreview)
             }
-        }
 
-        if (state.items is Async.Loading || state.items == Async.Uninitialized) {
-            item {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+            if (state.items is Async.Success && state.items.value.isEmpty()) {
+                item {
+                    Text(
+                        text = "No items",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }
@@ -100,6 +97,7 @@ private fun PreviewMainList() {
                     )
                 )
             )
-        )
+        ),
+        onRefresh = {}
     )
 }
