@@ -1,5 +1,6 @@
 package com.example.showcase
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -9,7 +10,10 @@ import com.example.showcase.features.mainlist.ui.MainListPage
 import com.example.showcase.features.mainlist.ui.MainListRoute
 
 @Composable
-fun Navigation(modifier: Modifier) {
+fun Navigation(
+    modifier: Modifier,
+    snackBarHostState: SnackbarHostState
+) {
     val navController = rememberNavController()
 
     NavHost(
@@ -18,7 +22,7 @@ fun Navigation(modifier: Modifier) {
         startDestination = MainListRoute
     ) {
         composable<MainListRoute> {
-            MainListPage()
+            MainListPage(snackBarHostState = snackBarHostState)
         }
     }
 }

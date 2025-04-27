@@ -1,7 +1,10 @@
 package com.example.showcase.features.mainlist.ui
 
+import androidx.compose.material3.SnackbarResult
 import androidx.lifecycle.viewModelScope
 import com.example.showcase.base.Async
+import com.example.showcase.base.EventLauncher
+import com.example.showcase.base.EventLauncherImpl
 import com.example.showcase.base.StateViewModel
 import com.example.showcase.base.getOrElse
 import com.example.showcase.base.getOrNull
@@ -12,18 +15,28 @@ import kotlinx.coroutines.launch
 
 class MainListViewModel(
     private val getListUseCase: GetListUseCase
-): StateViewModel<MainListState>(
-    initialState = MainListState()
-) {
+): StateViewModel<MainListState>(initialState = MainListState()),
+    EventLauncher<MainListEvent> by EventLauncherImpl()
+{
+
     fun fetchItems() {
         updateState { copy(items = Async.Loading(items.getOrNull())) }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val medias = getListUseCase().map(Media::toPreview)
+            val medias = getListUseCase()
+                .onFailure { sendEvent(MainListEvent.FetchError) }
+                .getOrDefault(emptyList())
+                .map(Media::toPreview)
             updateState {
                 val newItemsList = items.getOrElse(emptyList()) + medias
                 copy(items = Async.Success(newItemsList))
             }
+        }
+    }
+
+    fun onFetchFailedResult(result: SnackbarResult) {
+        if (result == SnackbarResult.ActionPerformed) {
+            fetchItems()
         }
     }
 }

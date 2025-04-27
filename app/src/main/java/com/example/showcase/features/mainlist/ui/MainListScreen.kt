@@ -6,16 +6,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.showcase.base.Async
 import com.example.showcase.base.getOrElse
 import com.example.showcase.features.mainlist.ui.components.MediaListItem
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -23,11 +27,23 @@ import org.koin.compose.viewmodel.koinViewModel
 data object MainListRoute
 
 @Composable
-fun MainListPage(viewModel: MainListViewModel = koinViewModel()) {
+fun MainListPage(
+    viewModel: MainListViewModel = koinViewModel(),
+    snackBarHostState: SnackbarHostState
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.fetchItems()
+
+        viewModel.eventsChannel.collectLatest {
+            val snackBarResult = snackBarHostState.showSnackbar(
+                message = "Fetch failed",
+                actionLabel = "Retry",
+                withDismissAction = true
+            )
+            viewModel.onFetchFailedResult(snackBarResult)
+        }
     }
 
     MainListScreen(state)
@@ -38,6 +54,16 @@ fun MainListScreen(state: MainListState) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(items = state.items.getOrElse(emptyList()), key = MediaPreview::id) { mediaPreview ->
             MediaListItem(mediaPreview)
+        }
+
+        if (state.items is Async.Success && state.items.value.isEmpty()) {
+            item {
+                Text(
+                    text = "No items",
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
 
         if (state.items is Async.Loading || state.items == Async.Uninitialized) {
