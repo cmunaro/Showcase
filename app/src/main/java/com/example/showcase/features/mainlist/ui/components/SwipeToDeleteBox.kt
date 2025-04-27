@@ -38,6 +38,7 @@ data class SwipeToDeleteState(
 
 @Composable
 fun SwipeToDeleteBox(
+    modifier: Modifier = Modifier,
     state: SwipeToDeleteState = remember { SwipeToDeleteState() },
     onDelete: () -> Unit,
     content: @Composable () -> Unit
@@ -67,7 +68,7 @@ fun SwipeToDeleteBox(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(Color.Red)
     ) {
@@ -105,7 +106,10 @@ fun SwipeToDeleteBox(
 @Preview
 @Composable
 private fun SwipeToDeleteBoxPreview() {
-    SwipeToDeleteBox(onDelete = {}) {
-        Box(modifier = Modifier.width(600.dp).height(64.dp).background(Color.White))
-    }
+    SwipeToDeleteBox(onDelete = {}, content = {
+        Box(modifier = Modifier
+            .width(600.dp)
+            .height(64.dp)
+            .background(Color.White))
+    }, modifier = Modifier)
 }

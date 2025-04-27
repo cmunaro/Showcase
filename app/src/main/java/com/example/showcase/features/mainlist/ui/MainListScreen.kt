@@ -58,7 +58,10 @@ fun MainListScreen(state: MainListState, onRefresh: () -> Unit, onDelete: (id: I
     ) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(items = state.items.getOrElse(emptyList()), key = MediaPreview::id) { mediaPreview ->
-                SwipeToDeleteBox(onDelete = { onDelete(mediaPreview.id) }) {
+                SwipeToDeleteBox(
+                    modifier = Modifier.animateItem(),
+                    onDelete = { onDelete(mediaPreview.id) }
+                ) {
                     MediaListItem(mediaPreview)
                 }
             }

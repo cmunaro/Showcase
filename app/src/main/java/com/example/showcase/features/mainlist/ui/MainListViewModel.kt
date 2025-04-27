@@ -10,38 +10,54 @@ import com.example.showcase.base.getOrElse
 import com.example.showcase.base.getOrNull
 import com.example.showcase.features.mainlist.domain.GetListUseCase
 import com.example.showcase.features.mainlist.domain.model.Media
-import kotlinx.coroutines.Dispatchers
+import io.ktor.util.collections.ConcurrentSet
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class MainListViewModel(
     private val getListUseCase: GetListUseCase
-): StateViewModel<MainListState>(initialState = MainListState()),
-    EventLauncher<MainListEvent> by EventLauncherImpl()
-{
+) : StateViewModel<MainListState>(initialState = MainListState()),
+    EventLauncher<MainListEvent> by EventLauncherImpl() {
+    private val deletionJobs = ConcurrentSet<Job>()
 
-    private fun fetchItems(fromStart: Boolean = false) {
+    private suspend fun fetchItems(fromStart: Boolean = false) {
         updateState { copy(items = Async.Loading(items.getOrNull())) }
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val medias = getListUseCase()
-                .onFailure { sendEvent(MainListEvent.FetchError) }
-                .getOrDefault(emptyList())
-                .map(Media::toPreview)
-            updateState {
-                val newItemsList = if(fromStart) medias else items.getOrElse(emptyList()) + medias
-                copy(items = Async.Success(newItemsList))
-            }
+        val medias = getListUseCase()
+            .onFailure { sendEvent(MainListEvent.FetchError) }
+            .getOrDefault(emptyList())
+            .map(Media::toPreview)
+        updateState {
+            val newItemsList = if (fromStart) medias else items.getOrElse(emptyList()) + medias
+            copy(items = Async.Success(newItemsList))
         }
     }
 
     fun onFetchFailedResult(result: SnackbarResult) {
         if (result == SnackbarResult.ActionPerformed) {
-            fetchItems()
+            viewModelScope.launch {
+                fetchItems()
+            }
         }
     }
 
-    fun onRefresh() = fetchItems(fromStart = true)
-    fun onDelete(id: Int) {
+    fun onRefresh() {
+        deletionJobs.forEach { it.cancel() }
+        viewModelScope.launch {
+            fetchItems(fromStart = true)
+        }
+    }
 
+    fun onDelete(id: Int) {
+        val job = viewModelScope.launch {
+            delay(0.5.seconds)
+            updateState {
+                copy(items = Async.Success(items.getOrElse(emptyList()).filterNot { it.id == id }))
+            }
+        }
+        deletionJobs.add(job)
+        job.invokeOnCompletion { deletionJobs.remove(job) }
     }
 }
