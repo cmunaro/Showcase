@@ -60,4 +60,12 @@ class MainListViewModel(
         deletionJobs.add(job)
         job.invokeOnCompletion { deletionJobs.remove(job) }
     }
+
+    fun initialize() {
+        if (state.value.items == Async.Uninitialized) {
+            viewModelScope.launch {
+                fetchItems()
+            }
+        }
+    }
 }

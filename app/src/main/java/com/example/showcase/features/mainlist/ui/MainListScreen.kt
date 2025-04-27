@@ -36,7 +36,7 @@ fun MainListPage(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.onRefresh()
+        viewModel.initialize()
 
         viewModel.eventsChannel.collectLatest {
             val snackBarResult = snackBarHostState.showSnackbar(
