@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.showcase.base.Async
 import com.example.showcase.base.getOrElse
 import com.example.showcase.features.mainlist.ui.components.MediaListItem
+import com.example.showcase.features.mainlist.ui.components.SwipeToDeleteBox
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
@@ -45,19 +46,21 @@ fun MainListPage(
         }
     }
 
-    MainListScreen(state = state, onRefresh = viewModel::onRefresh)
+    MainListScreen(state = state, onRefresh = viewModel::onRefresh, onDelete = viewModel::onDelete)
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun MainListScreen(state: MainListState, onRefresh: () -> Unit) {
+fun MainListScreen(state: MainListState, onRefresh: () -> Unit, onDelete: (id: Int) -> Unit) {
     PullToRefreshBox(
         isRefreshing = state.items is Async.Loading || state.items == Async.Uninitialized,
         onRefresh = onRefresh,
     ) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(items = state.items.getOrElse(emptyList()), key = MediaPreview::id) { mediaPreview ->
-                MediaListItem(mediaPreview)
+                SwipeToDeleteBox(onDelete = { onDelete(mediaPreview.id) }) {
+                    MediaListItem(mediaPreview)
+                }
             }
 
             if (state.items is Async.Success && state.items.value.isEmpty()) {
@@ -98,6 +101,7 @@ private fun PreviewMainList() {
                 )
             )
         ),
-        onRefresh = {}
+        onRefresh = {},
+        onDelete = {}
     )
 }

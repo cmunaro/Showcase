@@ -41,4 +41,7 @@ class MainListViewModel(
     }
 
     fun onRefresh() = fetchItems(fromStart = true)
+    fun onDelete(id: Int) {
+
+    }
 }

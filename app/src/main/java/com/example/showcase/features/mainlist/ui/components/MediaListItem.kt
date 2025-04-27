@@ -1,5 +1,6 @@
 package com.example.showcase.features.mainlist.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,19 +22,24 @@ fun MediaListItem(mediaPreview: MediaPreview) {
     Column(
         modifier = Modifier.fillMaxWidth()
             .height(64.dp)
+            .background(color = MaterialTheme.colorScheme.surface)
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Text(
             text = mediaPreview.title,
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge.copy(
+                color = MaterialTheme.colorScheme.onSurface
+            ),
             maxLines = 1,
             modifier = Modifier.fillMaxWidth()
         )
 
         Text(
             text = mediaPreview.dateTime,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodySmall.copy(
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
             textAlign = TextAlign.End,
             modifier = Modifier.fillMaxWidth()
         )
