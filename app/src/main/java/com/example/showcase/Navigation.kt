@@ -1,5 +1,7 @@
 package com.example.showcase
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,29 +15,38 @@ import com.example.showcase.features.mediadetails.ui.MediaDetailsPage
 import com.example.showcase.features.mediadetails.ui.MediaDetailsPageRoute
 
 @Composable
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun Navigation(
     modifier: Modifier,
     snackBarHostState: SnackbarHostState
 ) {
     val navController = rememberNavController()
 
-    NavHost(
-        navController = navController,
-        modifier = modifier,
-        startDestination = MainListRoute
-    ) {
-        composable<MainListRoute> {
-            MainListPage(
-                snackBarHostState = snackBarHostState,
-                onNavigateToItemDetails = { mediaId ->
-                    navController.navigate(MediaDetailsPageRoute(mediaId = mediaId))
-                }
-            )
-        }
+    SharedTransitionLayout {
+        NavHost(
+            navController = navController,
+            modifier = modifier,
+            startDestination = MainListRoute
+        ) {
+            composable<MainListRoute> {
+                MainListPage(
+                    snackBarHostState = snackBarHostState,
+                    onNavigateToItemDetails = { mediaId ->
+                        navController.navigate(MediaDetailsPageRoute(mediaId = mediaId))
+                    },
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedContentScope = this@composable
+                )
+            }
 
-        composable<MediaDetailsPageRoute> { backStackEntry ->
-            val route = backStackEntry.toRoute<MediaDetailsPageRoute>()
-            MediaDetailsPage(mediaId = route.mediaId)
+            composable<MediaDetailsPageRoute> { backStackEntry ->
+                val route = backStackEntry.toRoute<MediaDetailsPageRoute>()
+                MediaDetailsPage(
+                    mediaId = route.mediaId,
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedContentScope = this@composable
+                )
+            }
         }
     }
 }

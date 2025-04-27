@@ -1,5 +1,8 @@
 package com.example.showcase.features.mainlist.ui
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +23,8 @@ import com.example.showcase.base.Async
 import com.example.showcase.base.getOrElse
 import com.example.showcase.features.mainlist.ui.components.MediaListItem
 import com.example.showcase.features.mainlist.ui.components.SwipeToDeleteBox
+import com.example.showcase.ui.PreviewTransitionAnimation
+import com.example.showcase.ui.theme.ShowcaseTheme
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
@@ -28,10 +33,13 @@ import org.koin.compose.viewmodel.koinViewModel
 data object MainListRoute
 
 @Composable
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun MainListPage(
     viewModel: MainListViewModel = koinViewModel(),
     snackBarHostState: SnackbarHostState,
-    onNavigateToItemDetails: (id: Int) -> Unit
+    onNavigateToItemDetails: (id: Int) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -52,17 +60,21 @@ fun MainListPage(
         state = state,
         onRefresh = viewModel::onRefresh,
         onItemDeletion = viewModel::onItemDeletion,
-        onItemClick = onNavigateToItemDetails
+        onItemClick = onNavigateToItemDetails,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedContentScope = animatedContentScope
     )
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 fun MainListScreen(
     state: MainListState,
     onRefresh: () -> Unit,
     onItemDeletion: (id: Int) -> Unit,
-    onItemClick: (id: Int) -> Unit
+    onItemClick: (id: Int) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope
 ) {
     PullToRefreshBox(
         isRefreshing = state.items is Async.Loading || state.items == Async.Uninitialized,
@@ -76,7 +88,7 @@ fun MainListScreen(
                         .clickable { onItemClick(mediaPreview.id) },
                     onDelete = { onItemDeletion(mediaPreview.id) }
                 ) {
-                    MediaListItem(mediaPreview)
+                    MediaListItem(mediaPreview, sharedTransitionScope, animatedContentScope)
                 }
             }
 
@@ -93,33 +105,40 @@ fun MainListScreen(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
 private fun PreviewMainList() {
-    MainListScreen(
-        state = MainListState(
-            items = Async.Loading(
-                listOf(
-                    MediaPreview(
-                        id = 1,
-                        title = "Title 1",
-                        dateTime = "11/11/1111"
-                    ),
-                    MediaPreview(
-                        id = 2,
-                        title = "Title 2",
-                        dateTime = "11/11/1111"
-                    ),
-                    MediaPreview(
-                        id = 3,
-                        title = "Title 3",
-                        dateTime = "11/11/1111"
+    ShowcaseTheme {
+        PreviewTransitionAnimation { sharedTransitionScope, animatedContentScope ->
+            MainListScreen(
+                state = MainListState(
+                    items = Async.Loading(
+                        listOf(
+                            MediaPreview(
+                                id = 1,
+                                title = "Title 1",
+                                dateTime = "11/11/1111"
+                            ),
+                            MediaPreview(
+                                id = 2,
+                                title = "Title 2",
+                                dateTime = "11/11/1111"
+                            ),
+                            MediaPreview(
+                                id = 3,
+                                title = "Title 3",
+                                dateTime = "11/11/1111"
+                            )
+                        )
                     )
-                )
+                ),
+                onRefresh = {},
+                onItemDeletion = {},
+                onItemClick = {},
+                sharedTransitionScope = sharedTransitionScope,
+                animatedContentScope = animatedContentScope
             )
-        ),
-        onRefresh = {},
-        onItemDeletion = {},
-        onItemClick = {}
-    )
+        }
+    }
 }

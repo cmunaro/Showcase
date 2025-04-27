@@ -1,13 +1,10 @@
-package com.example.showcase.features.mainlist.ui.components
+package com.example.showcase.features.mediadetails.ui.components
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,42 +14,39 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
-import com.example.showcase.features.mainlist.ui.MediaPreview
 import com.example.showcase.ui.PreviewTransitionAnimation
 import com.example.showcase.ui.theme.ShowcaseTheme
 
 @Composable
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun MediaListItem(
-    mediaPreview: MediaPreview,
+fun MediaHeader(
+    title: String,
+    dateTime: String,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp)
-            .background(color = MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.SpaceEvenly
-    ) {
-        with(sharedTransitionScope) {
+    with(sharedTransitionScope) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp)
+        ) {
             Text(
-                text = mediaPreview.title,
+                text = title,
                 style = MaterialTheme.typography.titleLarge.copy(
                     color = MaterialTheme.colorScheme.onSurface
                 ),
-                maxLines = 1,
                 modifier = Modifier
                     .fillMaxWidth()
                     .sharedElement(
-                        sharedContentState = rememberSharedContentState(key = mediaPreview.title),
+                        sharedContentState = rememberSharedContentState(key = title),
                         animatedVisibilityScope = animatedContentScope
                     )
             )
 
             Text(
-                text = mediaPreview.dateTime,
+                text = dateTime,
                 style = MaterialTheme.typography.bodySmall.copy(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
@@ -60,7 +54,7 @@ fun MediaListItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .sharedElement(
-                        sharedContentState = rememberSharedContentState(key = mediaPreview.dateTime),
+                        sharedContentState = rememberSharedContentState(key = dateTime),
                         animatedVisibilityScope = animatedContentScope
                     )
             )
@@ -74,12 +68,9 @@ fun MediaListItem(
 fun PreviewMediaListItem() {
     ShowcaseTheme {
         PreviewTransitionAnimation { sharedTransitionScope, animatedContentScope ->
-            MediaListItem(
-                mediaPreview = MediaPreview(
-                    id = 1,
-                    title = LoremIpsum(100).values.joinToString(),
-                    dateTime = "11/11/1111"
-                ),
+            MediaHeader(
+                title = LoremIpsum(8).values.joinToString(),
+                dateTime = "11/11/1111",
                 sharedTransitionScope = sharedTransitionScope,
                 animatedContentScope = animatedContentScope
             )
