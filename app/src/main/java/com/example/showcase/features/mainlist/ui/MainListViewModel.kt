@@ -50,7 +50,7 @@ class MainListViewModel(
         }
     }
 
-    fun onDelete(id: Int) {
+    fun onItemDeletion(id: Int) {
         val job = viewModelScope.launch {
             delay(0.5.seconds)
             updateState {

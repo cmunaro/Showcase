@@ -1,5 +1,6 @@
 package com.example.showcase.features.mainlist.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,7 +30,8 @@ data object MainListRoute
 @Composable
 fun MainListPage(
     viewModel: MainListViewModel = koinViewModel(),
-    snackBarHostState: SnackbarHostState
+    snackBarHostState: SnackbarHostState,
+    onNavigateToItemDetails: (id: Int) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -46,12 +48,22 @@ fun MainListPage(
         }
     }
 
-    MainListScreen(state = state, onRefresh = viewModel::onRefresh, onDelete = viewModel::onDelete)
+    MainListScreen(
+        state = state,
+        onRefresh = viewModel::onRefresh,
+        onItemDeletion = viewModel::onItemDeletion,
+        onItemClick = onNavigateToItemDetails
+    )
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun MainListScreen(state: MainListState, onRefresh: () -> Unit, onDelete: (id: Int) -> Unit) {
+fun MainListScreen(
+    state: MainListState,
+    onRefresh: () -> Unit,
+    onItemDeletion: (id: Int) -> Unit,
+    onItemClick: (id: Int) -> Unit
+) {
     PullToRefreshBox(
         isRefreshing = state.items is Async.Loading || state.items == Async.Uninitialized,
         onRefresh = onRefresh,
@@ -59,8 +71,10 @@ fun MainListScreen(state: MainListState, onRefresh: () -> Unit, onDelete: (id: I
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(items = state.items.getOrElse(emptyList()), key = MediaPreview::id) { mediaPreview ->
                 SwipeToDeleteBox(
-                    modifier = Modifier.animateItem(),
-                    onDelete = { onDelete(mediaPreview.id) }
+                    modifier = Modifier
+                        .animateItem()
+                        .clickable { onItemClick(mediaPreview.id) },
+                    onDelete = { onItemDeletion(mediaPreview.id) }
                 ) {
                     MediaListItem(mediaPreview)
                 }
@@ -105,6 +119,7 @@ private fun PreviewMainList() {
             )
         ),
         onRefresh = {},
-        onDelete = {}
+        onItemDeletion = {},
+        onItemClick = {}
     )
 }
