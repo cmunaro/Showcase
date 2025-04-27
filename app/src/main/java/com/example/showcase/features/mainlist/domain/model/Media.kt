@@ -1,7 +1,8 @@
 package com.example.showcase.features.mainlist.domain.model
 
-import com.example.showcase.features.mainlist.data.model.MediaData
-import com.example.showcase.features.mainlist.data.model.MediaDate
+import com.example.showcase.features.shared.data.model.MediaData
+import com.example.showcase.features.shared.data.model.MediaDate
+import com.example.showcase.features.shared.data.model.MediaType
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -11,7 +12,7 @@ data class Media(
     val id: Int,
     val url: String,
     val urlBig: String,
-    val type: String,
+    val type: MediaType,
     val dateTime: LocalDateTime,
     val title: String
 )

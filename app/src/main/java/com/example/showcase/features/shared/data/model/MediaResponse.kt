@@ -1,4 +1,4 @@
-package com.example.showcase.features.mainlist.data.model
+package com.example.showcase.features.shared.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -15,7 +15,7 @@ data class MediaData(
     @SerialName("mediaId") val id: Int,
     @SerialName("mediaUrl") val url: String,
     @SerialName("mediaUrlBig") val urlBig: String,
-    @SerialName("mediaType") val type: String,
+    @SerialName("mediaType") val type: MediaType,
     @SerialName("mediaDate") val date: MediaDate,
     @SerialName("mediaTitleCustom") val titleCustom: String
 )
@@ -25,3 +25,9 @@ data class MediaDate(
     val dateString: String,
     val year: String
 )
+
+@Serializable
+enum class MediaType {
+    @SerialName("pdf")
+    PDF
+}

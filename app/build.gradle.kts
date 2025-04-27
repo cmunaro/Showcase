@@ -57,6 +57,7 @@ dependencies {
     // Koin
     implementation(project.dependencies.platform("io.insert-koin:koin-bom:4.0.2"))
     implementation(libs.koin.compose.viewmodel.navigation)
+    implementation(libs.koin.android)
     implementation(libs.koin.core)
 
     // Ktor
