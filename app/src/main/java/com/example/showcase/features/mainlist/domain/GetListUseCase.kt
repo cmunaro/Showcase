@@ -7,7 +7,7 @@ interface GetListUseCase {
 }
 
 class GetListUseCaseImpl(
-    private val repository: ListRepository
+    private val repository: MediaRepository
 ): GetListUseCase {
     override suspend fun invoke() = repository.getList()
 }

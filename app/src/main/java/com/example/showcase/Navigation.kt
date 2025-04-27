@@ -9,8 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.showcase.features.mainlist.ui.MainListPage
 import com.example.showcase.features.mainlist.ui.MainListRoute
-import com.example.showcase.features.mediadetails.MediaDetailsPage
-import com.example.showcase.features.mediadetails.MediaDetailsPageRoute
+import com.example.showcase.features.mediadetails.ui.MediaDetailsPage
+import com.example.showcase.features.mediadetails.ui.MediaDetailsPageRoute
 
 @Composable
 fun Navigation(

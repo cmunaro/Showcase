@@ -3,7 +3,7 @@ package com.example.showcase.features.mainlist.ui
 import androidx.compose.runtime.Immutable
 import com.example.showcase.base.Async
 import com.example.showcase.features.mainlist.domain.model.Media
-import java.time.LocalDateTime
+import com.example.showcase.ui.toLocalDateTimeString
 
 @Immutable
 data class MainListState(
@@ -20,5 +20,5 @@ data class MediaPreview(
 fun Media.toPreview() = MediaPreview(
     id = id,
     title = title,
-    dateTime = "${dateTime.dayOfMonth}/${dateTime.monthValue}/${dateTime.year}"
+    dateTime = dateTime.toLocalDateTimeString()
 )

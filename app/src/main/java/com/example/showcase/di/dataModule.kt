@@ -1,9 +1,11 @@
 package com.example.showcase.di
 
-import com.example.showcase.features.mainlist.data.ListRepositoryImpl
+import com.example.showcase.features.mainlist.data.InMemoryMediaStorage
+import com.example.showcase.features.mainlist.data.MediaRepositoryImpl
+import com.example.showcase.features.mainlist.data.MediaStorage
 import com.example.showcase.features.mainlist.data.VegansLabAPI
 import com.example.showcase.features.mainlist.data.createVegansLabAPI
-import com.example.showcase.features.mainlist.domain.ListRepository
+import com.example.showcase.features.mainlist.domain.MediaRepository
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -15,7 +17,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val dataModule = module {
-    singleOf(::ListRepositoryImpl) bind ListRepository::class
+    singleOf(::MediaRepositoryImpl) bind MediaRepository::class
+    singleOf(::InMemoryMediaStorage) bind MediaStorage::class
 
     single<VegansLabAPI> {
         Ktorfit.Builder()
