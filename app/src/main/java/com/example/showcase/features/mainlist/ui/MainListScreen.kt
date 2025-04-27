@@ -1,10 +1,16 @@
 package com.example.showcase.features.mainlist.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.showcase.base.Async
@@ -29,19 +35,27 @@ fun MainListPage(viewModel: MainListViewModel = koinViewModel()) {
 
 @Composable
 fun MainListScreen(state: MainListState) {
-    LazyColumn {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(items = state.items.getOrElse(emptyList()), key = MediaPreview::id) { mediaPreview ->
             MediaListItem(mediaPreview)
+        }
+
+        if (state.items is Async.Loading || state.items == Async.Uninitialized) {
+            item {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
         }
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun PreviewMainList() {
     MainListScreen(
         state = MainListState(
-            items = Async.Success(
+            items = Async.Loading(
                 listOf(
                     MediaPreview(
                         id = 1,
