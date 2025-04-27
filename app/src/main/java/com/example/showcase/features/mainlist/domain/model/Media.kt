@@ -12,7 +12,7 @@ data class Media(
     val url: String,
     val urlBig: String,
     val type: String,
-    val date: LocalDateTime,
+    val dateTime: LocalDateTime,
     val title: String
 )
 
@@ -21,7 +21,7 @@ fun MediaData.toDomain() = Media(
     url = url,
     urlBig = urlBig,
     type = type,
-    date = date.toDateTime(),
+    dateTime = date.toDateTime(),
     title = titleCustom
 )
 
