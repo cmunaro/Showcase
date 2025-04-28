@@ -22,6 +22,12 @@ class MainListViewModel(
     EventLauncher<MainListEvent> by EventLauncherImpl() {
     private val deletionJobs = ConcurrentSet<Job>()
 
+    init {
+        viewModelScope.launch {
+            fetchItems()
+        }
+    }
+
     private suspend fun fetchItems(fromStart: Boolean = false) {
         updateState { copy(items = Async.Loading(items.getOrNull())) }
 
@@ -52,20 +58,16 @@ class MainListViewModel(
 
     fun onItemDeletion(id: Int) {
         val job = viewModelScope.launch {
-            delay(0.5.seconds)
+            delay(0.2.seconds)
             updateState {
-                copy(items = Async.Success(items.getOrElse(emptyList()).filterNot { it.id == id }))
+                copy(
+                    items = Async.Success(
+                        items.getOrElse(emptyList()).filterNot { it.id == id }
+                    )
+                )
             }
         }
         deletionJobs.add(job)
         job.invokeOnCompletion { deletionJobs.remove(job) }
-    }
-
-    fun initialize() {
-        if (state.value.items == Async.Uninitialized) {
-            viewModelScope.launch {
-                fetchItems()
-            }
-        }
     }
 }

@@ -15,41 +15,33 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-@Stable
-data class SwipeToDeleteState(
-    val maxDrag: Dp = (-64).dp,
-    val snapPercentageThreshold: Float = 0.75f
-)
-
 @Composable
 fun SwipeToDeleteBox(
     modifier: Modifier = Modifier,
-    state: SwipeToDeleteState = remember { SwipeToDeleteState() },
     onDelete: () -> Unit,
     content: @Composable () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val swipeOffset = remember { Animatable(0f) }
-    val maxDragPx = with(LocalDensity.current) { state.maxDrag.toPx() }
-    val thresholdPx = maxDragPx * state.snapPercentageThreshold
-    val canDrag = remember { mutableStateOf(true) }
+    val maxDragPx = with(LocalDensity.current) { (-64).dp.toPx() }
+    var canDrag by remember { mutableStateOf(true) }
     val draggableState = rememberDraggableState { delta ->
-        if (canDrag.value) {
+        if (canDrag) {
             val newOffset = (swipeOffset.value + delta).coerceIn(maxDragPx, 0f)
             scope.launch {
                 swipeOffset.snapTo(newOffset)
@@ -58,9 +50,9 @@ fun SwipeToDeleteBox(
     }
 
     LaunchedEffect(swipeOffset.value) {
-        if (swipeOffset.value <= thresholdPx) {
-            if (canDrag.value) {
-                canDrag.value = false
+        if (swipeOffset.value <= maxDragPx) {
+            if (canDrag) {
+                canDrag = false
                 onDelete()
             }
             swipeOffset.animateTo(maxDragPx)
@@ -86,11 +78,11 @@ fun SwipeToDeleteBox(
                 .fillMaxWidth()
                 .offset { IntOffset(swipeOffset.value.roundToInt(), 0) }
                 .draggable(
-                    enabled = canDrag.value,
+                    enabled = canDrag,
                     state = draggableState,
                     orientation = Orientation.Horizontal,
                     onDragStopped = {
-                        if (swipeOffset.value > thresholdPx) {
+                        if (swipeOffset.value > maxDragPx) {
                             scope.launch {
                                 swipeOffset.animateTo(0f)
                             }

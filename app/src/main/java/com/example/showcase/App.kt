@@ -14,7 +14,6 @@ import com.example.showcase.di.viewModelModule
 import com.example.showcase.ui.theme.ShowcaseTheme
 import org.koin.android.ext.koin.androidContext
 import org.koin.compose.KoinApplication
-import org.koin.compose.KoinContext
 
 @Composable
 fun App() {
@@ -26,19 +25,17 @@ fun App() {
                 androidContext(context.applicationContext)
             }
         ) {
-            KoinContext {
-                val snackBarHostState = remember { SnackbarHostState() }
+            val snackBarHostState = remember { SnackbarHostState() }
 
-                Scaffold(
-                    snackbarHost = {
-                        SnackbarHost(hostState = snackBarHostState)
-                    }
-                ) { padding ->
-                    Navigation(
-                        snackBarHostState = snackBarHostState,
-                        modifier = Modifier.padding(padding)
-                    )
+            Scaffold(
+                snackbarHost = {
+                    SnackbarHost(hostState = snackBarHostState)
                 }
+            ) { padding ->
+                Navigation(
+                    snackBarHostState = snackBarHostState,
+                    modifier = Modifier.padding(padding)
+                )
             }
         }
     }

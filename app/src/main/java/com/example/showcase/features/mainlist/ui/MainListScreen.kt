@@ -43,9 +43,7 @@ fun MainListPage(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        viewModel.initialize()
-
+    LaunchedEffect(viewModel) {
         viewModel.eventsChannel.collectLatest {
             val snackBarResult = snackBarHostState.showSnackbar(
                 message = "Fetch failed",
