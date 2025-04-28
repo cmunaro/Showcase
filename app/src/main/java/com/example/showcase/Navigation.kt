@@ -43,6 +43,7 @@ fun Navigation(
                 val route = backStackEntry.toRoute<MediaDetailsPageRoute>()
                 MediaDetailsPage(
                     mediaId = route.mediaId,
+                    onGoBack = { navController.popBackStack() },
                     sharedTransitionScope = this@SharedTransitionLayout,
                     animatedContentScope = this@composable
                 )
