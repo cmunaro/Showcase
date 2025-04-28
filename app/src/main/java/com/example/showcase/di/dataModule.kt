@@ -21,7 +21,14 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val dataModule = module {
-    singleOf(::MediaRepositoryImpl) bind MediaRepository::class
+    single<MediaRepository> {
+        MediaRepositoryImpl(
+            api = get(),
+            mediaStorage = get(),
+            tempFileManager = get(),
+            pdfToImageService = get()
+        )
+    }
     singleOf(::InMemoryMediaStorage) bind MediaStorage::class
     singleOf(::PdfToImageServiceImpl) bind PdfToImageService::class
     singleOf(::TempFileManagerImpl) bind TempFileManager::class

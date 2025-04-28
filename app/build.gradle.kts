@@ -88,4 +88,5 @@ dependencies {
     testImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
     testImplementation(libs.turbine)
+    testImplementation(libs.koin.test)
 }
