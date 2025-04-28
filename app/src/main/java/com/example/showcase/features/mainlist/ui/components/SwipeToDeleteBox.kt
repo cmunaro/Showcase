@@ -24,9 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.showcase.R
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -66,7 +68,7 @@ fun SwipeToDeleteBox(
     ) {
         Icon(
             imageVector = Icons.Default.Delete,
-            contentDescription = "Delete",
+            contentDescription = stringResource(R.string.delete_icon_description),
             tint = Color.White,
             modifier = Modifier
                 .width(64.dp)

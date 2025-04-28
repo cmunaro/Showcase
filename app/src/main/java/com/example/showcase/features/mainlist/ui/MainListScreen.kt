@@ -16,9 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.showcase.R
 import com.example.showcase.base.Async
 import com.example.showcase.base.getOrElse
 import com.example.showcase.features.mainlist.ui.components.MediaListItem
@@ -42,12 +44,14 @@ fun MainListPage(
     animatedContentScope: AnimatedContentScope
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackBarFetchFailedTitle = stringResource(R.string.snackbar_fetch_failed_title)
+    val snackBarFetchFailedRetry = stringResource(R.string.snackbar_fetch_failed_retry)
 
     LaunchedEffect(viewModel) {
         viewModel.eventsChannel.collectLatest {
             val snackBarResult = snackBarHostState.showSnackbar(
-                message = "Fetch failed",
-                actionLabel = "Retry",
+                message = snackBarFetchFailedTitle,
+                actionLabel = snackBarFetchFailedRetry,
                 withDismissAction = true
             )
             viewModel.onFetchFailedSnackBarResult(snackBarResult)

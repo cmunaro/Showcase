@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Showcase</string>
+    <string name="snackbar_fetch_failed_title">Fetch failed</string>
+    <string name="snackbar_fetch_failed_retry">Retry</string>
+    <string name="delete_icon_description">Delete</string>
+    <string name="open_media_online_button">Open online</string>
 </resources>

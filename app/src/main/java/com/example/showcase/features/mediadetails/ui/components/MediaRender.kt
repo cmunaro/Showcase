@@ -16,8 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.showcase.R
 import com.example.showcase.base.Async
 
 @Composable
@@ -30,7 +32,7 @@ fun MediaRender(render: Async<ImageBitmap>, onClick: () -> Unit) {
             is Async.Loading, Async.Uninitialized -> CircularProgressIndicator()
             is Async.Failure -> {
                 Button(onClick = onClick) {
-                    Text(text = "Open online")
+                    Text(text = stringResource(R.string.open_media_online_button))
                 }
             }
 
