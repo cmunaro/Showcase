@@ -50,7 +50,7 @@ fun MainListPage(
                 actionLabel = "Retry",
                 withDismissAction = true
             )
-            viewModel.onFetchFailedResult(snackBarResult)
+            viewModel.onFetchFailedSnackBarResult(snackBarResult)
         }
     }
 

@@ -41,7 +41,7 @@ class MainListViewModel(
         }
     }
 
-    fun onFetchFailedResult(result: SnackbarResult) {
+    fun onFetchFailedSnackBarResult(result: SnackbarResult) {
         if (result == SnackbarResult.ActionPerformed) {
             viewModelScope.launch {
                 fetchItems()
