@@ -24,13 +24,14 @@ class MediaRepositoryImpl(
         }
     }
 
-    override fun getMedia(mediaId: Int) =
-        mediaStorage.getMediaOrNull(mediaId)
+    override fun getMedia(mediaId: Int): Result<Media> = runCatching {
+        mediaStorage.getMediaOrNull(mediaId)!!
+    }
 
     override suspend fun getImageOf(mediaId: Int): Result<ImageBitmap> =
         runCatchingNonCancellation {
             mediaStorage.getImageOrNull(mediaId) ?: withContext(Dispatchers.IO) {
-                val media = getMedia(mediaId)!!
+                val media = getMedia(mediaId).getOrThrow()
                 if (media.type != MediaType.PDF) {
                     throw IllegalArgumentException("Media type is not supported")
                 }

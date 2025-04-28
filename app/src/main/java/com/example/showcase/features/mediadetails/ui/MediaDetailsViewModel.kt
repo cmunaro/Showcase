@@ -3,6 +3,7 @@ package com.example.showcase.features.mediadetails.ui
 import androidx.lifecycle.viewModelScope
 import com.example.showcase.base.Async
 import com.example.showcase.base.StateViewModel
+import com.example.showcase.features.mainlist.domain.model.Media
 import com.example.showcase.features.mediadetails.domain.GetMediaUseCase
 import com.example.showcase.features.mediadetails.domain.LoadMediaImageUseCase
 import kotlinx.coroutines.launch
@@ -19,7 +20,7 @@ class MediaDetailsViewModel(
     }
 
     private fun loadMediaDescription(mediaId: Int) {
-        val media = getMediaUseCase(mediaId)?.toMediaDetails()
+        val media = getMediaUseCase(mediaId).map(Media::toMediaDetails).getOrNull()
         updateState {
             copy(
                 mediaDetails = if (media == null) Async.Failure(MediaNotFoundException(mediaId))

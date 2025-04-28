@@ -4,7 +4,7 @@ import com.example.showcase.features.mainlist.domain.MediaRepository
 import com.example.showcase.features.mainlist.domain.model.Media
 
 interface GetMediaUseCase {
-    operator fun invoke(mediaId: Int): Media?
+    operator fun invoke(mediaId: Int): Result<Media>
 }
 
 class GetMediaUseCaseImpl(private val mediaRepository: MediaRepository) : GetMediaUseCase {
